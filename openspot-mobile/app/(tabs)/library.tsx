@@ -10,6 +10,7 @@ import { MusicPlayerContext } from './_layout';
 import { Ionicons } from '@expo/vector-icons';
 import { PlaylistStorage, Playlist } from '@/lib/playlist-storage';
 import { MusicAPI } from '@/lib/music-api';
+import { importSpotifyPlaylist } from '@/lib/spotify-import';
 import { useFocusEffect } from 'expo-router';
 
 export default function LibraryScreen() {
@@ -26,6 +27,8 @@ export default function LibraryScreen() {
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
   const [playlistTracks, setPlaylistTracks] = useState<any[]>([]);
   const [showLikedSongs, setShowLikedSongs] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [spotifyUrl, setSpotifyUrl] = useState('');
 
   useEffect(() => {
     fetchPlaylists();
@@ -270,6 +273,10 @@ export default function LibraryScreen() {
             <Ionicons name="add-circle" size={24} color="#1DB954" style={{ marginRight: 8 }} />
             <Text style={styles.createButtonText}>Create Playlist</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.createButton} onPress={() => setShowImportModal(true)}>
+            <Ionicons name="logo-spotify" size={24} color="#1DB954" style={{ marginRight: 8 }} />
+            <Text style={styles.createButtonText}>Import Spotify Playlist</Text>
+          </TouchableOpacity>
           <View style={{ height: 120 }} />
         </ScrollView>
       ) : (
@@ -359,6 +366,39 @@ export default function LibraryScreen() {
               <Text style={styles.createButtonText}>Create</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.cancelButton} onPress={() => setShowCreateModal(false)}>
+              <Text style={{ color: '#fff', fontSize: 15 }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal visible={showImportModal} transparent animationType="fade" onRequestClose={() => setShowImportModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Import Spotify Playlist</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Playlist URL or ID"
+              placeholderTextColor="#888"
+              value={spotifyUrl}
+              onChangeText={setSpotifyUrl}
+            />
+            <TouchableOpacity
+              style={[styles.createButton, { marginTop: 18 }]}
+              onPress={async () => {
+                try {
+                  await importSpotifyPlaylist(spotifyUrl.trim());
+                  setShowImportModal(false);
+                  setSpotifyUrl('');
+                  fetchPlaylists();
+                } catch (e) {
+                  Alert.alert('Import failed', (e as Error).message);
+                }
+              }}
+            >
+              <Ionicons name="logo-spotify" size={24} color="#1DB954" style={{ marginRight: 8 }} />
+              <Text style={styles.createButtonText}>Import</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => setShowImportModal(false)}>
               <Text style={{ color: '#fff', fontSize: 15 }}>Cancel</Text>
             </TouchableOpacity>
           </View>
