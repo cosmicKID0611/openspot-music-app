@@ -163,6 +163,7 @@ npm run electron-pack
 - **🔄 Background Playback**: Continue listening while using other apps
 - **🚫 No Login Required**: Jump right in! No accounts or sign-ups needed
 - **💾 Persistent State**: Your liked songs and recently played tracks are saved across app restarts
+- **📥 Spotify Playlist Import**: Bring in tracks from any Spotify playlist using your own API token
 - **🎨 Beautiful UI**: Clean, modern interface designed for each platform
 - **🆓 Completely Free & Ad-Free**: Enjoy uninterrupted music without any cost or advertisements
 
